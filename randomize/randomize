@@ -1,0 +1,9 @@
+#!/usr/bin/python
+
+import sys, random
+
+lines = [line for line in sys.stdin]
+random.seed()
+lines.sort(lambda x,y: random.randint(-1, 1))
+print "".join(lines),
+
