@@ -1,0 +1,51 @@
+#!/usr/bin/python
+
+import sys, getopt, sr
+
+def main(argv):
+	try:
+		opts, files = getopt.getopt(argv[1:], "hvnlus:r:p:a:A:",
+		             ["help", "verbose", "dry-run", "lower-case", "upper-case"
+		              "search=", "replace=", "prefix=", "append=", "append-ext="])
+	except getopt.GetoptError, err:
+		print str(err)
+		sys.exit(2)
+
+	verbose = False
+	dryrun = False
+	cmdMgr = sr.CmdManager()
+	for switch, value in opts:
+		# TODO Lav kommandoer en kombination af marker og insertere.
+		if switch in ("-h", "--help"):
+			pass #TODO Print help and exit.
+		elif switch in ("-v", "--verbose"):
+			verbose = True
+		elif switch in ("-n", "--dry-run"):
+			dryrun = True
+		elif switch in ("-s", "--search"):
+			cmdMgr.add(sr.Search(value))
+		elif switch in ("-r", "--replace"):
+			cmdMgr.add(sr.Replace(value))
+		elif switch in ("-p", "--prefix"):
+			cmdMgr.add(sr.Prefix(value))
+		elif switch in ("-a", "--append"):
+			cmdMgr.add(sr.Append(value))
+		elif switch in ("-A", "--append-ext"):
+			append = sr.Append(value)
+			append.setAppendExtension(True)
+			cmdMgr.add(append)
+		elif switch in ("l", "lower-case"):
+			pass #TODO
+		elif switch in ("u", "upper-case"):
+			pass #TODO
+		else:
+			print "Unknown switch: " + switch
+			sys.exit(2)
+	
+	for file in files:
+		if verbose:
+			print file + " => " + cmdMgr.execute(file)
+		if not dryrun:
+			pass #TODO
+if __name__ == "__main__":
+	main(sys.argv)
