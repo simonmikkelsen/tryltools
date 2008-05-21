@@ -15,9 +15,9 @@ def main(argv):
 	dryrun = False
 	cmdMgr = sr.CmdManager()
 	for switch, value in opts:
-		# TODO Lav kommandoer en kombination af marker og insertere.
 		if switch in ("-h", "--help"):
-			pass #TODO Print help and exit.
+			printHelp()
+			sys.exit(0)
 		elif switch in ("-v", "--verbose"):
 			verbose = True
 		elif switch in ("-n", "--dry-run"):
@@ -35,9 +35,9 @@ def main(argv):
 			append.setAppendExtension(True)
 			cmdMgr.add(append)
 		elif switch in ("l", "lower-case"):
-			pass #TODO
+			pass #TODO add support.
 		elif switch in ("u", "upper-case"):
-			pass #TODO
+			pass #TODO add support.
 		else:
 			print "Unknown switch: " + switch
 			sys.exit(2)
@@ -46,6 +46,31 @@ def main(argv):
 		if verbose:
 			print file + " => " + cmdMgr.execute(file)
 		if not dryrun:
-			pass #TODO
+			pass #TODO Do the actual renaming.
+
+def printHelp():
+	print "Multi mover: Rename multiple files or folders using general and"
+	print "             flexible rules."
+	print ""
+	print "Usage: mmv [-h] [-v] [-n] [-l] [-u] [-s search] [-r replace] [-p prefix]"
+	print "           [-a append] [-A apennd-after-ext]"
+	print ""
+	print "       -h --help  Print this help and exit."
+	print "       -v --verbose Print extra output during operation."
+	print "       -n --dry-run Do not rename any files. Should be used in"
+	print "                    combination with -v."
+	print "       -l --lower-case Make the latest marked text lower case."
+	print "       -u --upper-case Make the latest marked text upper case."
+	print "       -s --search  Find the given text and mark it. Use e.g."
+	print "                    -r to actually replace it."
+	print "       -r --replace Replaces the latest marked text with the given"
+	print "                    text. Usually the text has been marked using -s."
+	print "       -p --prefix  Insert the given string before the treated string."
+	print "       -a --append  Append the given string to the treated file name"
+	print "                    BUT before the file extension (thus leaving the ext)."
+	print "       -A --append-ext Append the given string to the treated string,"
+	print "                    not taking any file extension into account."
+
+# Run the program.
 if __name__ == "__main__":
 	main(sys.argv)
