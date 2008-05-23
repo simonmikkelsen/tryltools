@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, getopt, sr
+import sys, getopt, sr, shutil
 
 def main(argv):
 	try:
@@ -25,28 +25,35 @@ def main(argv):
 		elif switch in ("-s", "--search"):
 			cmdMgr.add(sr.Search(value))
 		elif switch in ("-r", "--replace"):
+			cmdMgr.add(sr.Delete())
+			# TODO The replacer should be an appender.
 			cmdMgr.add(sr.Replace(value))
 		elif switch in ("-p", "--prefix"):
 			cmdMgr.add(sr.Prefix(value))
 		elif switch in ("-a", "--append"):
+			# TODO This should be a search and an append - no need for special code.
 			cmdMgr.add(sr.Append(value))
 		elif switch in ("-A", "--append-ext"):
+			# TODO this should be an "end of line" marker and an appender.
 			append = sr.Append(value)
 			append.setAppendExtension(True)
 			cmdMgr.add(append)
 		elif switch in ("l", "lower-case"):
-			pass #TODO add support.
+			# TODO make this
+			print "lower case not yet supported..."
 		elif switch in ("u", "upper-case"):
-			pass #TODO add support.
+			# TODO make this
+			print "upper case not yet supported..."
 		else:
 			print "Unknown switch: " + switch
 			sys.exit(2)
 	
 	for file in files:
+		destFile = cmdMgr.execute(file)
 		if verbose:
-			print file + " => " + cmdMgr.execute(file)
+			print file + " => " + destFile
 		if not dryrun:
-			pass #TODO Do the actual renaming.
+			shutil.move(file, destFile)
 
 def printHelp():
 	print "Multi mover: Rename multiple files or folders using general and"
