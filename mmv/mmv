@@ -6,13 +6,15 @@ def main(argv):
 	try:
 		opts, files = getopt.getopt(argv[1:], "hvnlus:r:p:a:A:",
 		             ["help", "verbose", "dry-run", "lower-case", "upper-case"
-		              "search=", "replace=", "prefix=", "append=", "append-ext="])
+		              "search=", "replace=", "prefix=", "append=", "append-ext=",
+		              "parents"])
 	except getopt.GetoptError, err:
 		print str(err)
 		sys.exit(2)
 
 	verbose = False
 	dryrun = False
+	makeParentDirs = False 
 	cmdMgr = sr.CmdManager()
 	for switch, value in opts:
 		if switch in ("-h", "--help"):
@@ -44,6 +46,10 @@ def main(argv):
 		elif switch in ("u", "upper-case"):
 			# TODO make this
 			print "upper case not yet supported..."
+		elif switch in ("parents"):
+			makeParentDirs = True
+			# TODO make this
+			print "Creating non existing dirs not yet supported..."
 		else:
 			print "Unknown switch: " + switch
 			sys.exit(2)
@@ -66,8 +72,24 @@ def printHelp():
 	print "       -v --verbose Print extra output during operation."
 	print "       -n --dry-run Do not rename any files. Should be used in"
 	print "                    combination with -v."
+	print "       --parent     When operating on both file and path, try to"
+	print "                    create non existing dirs (like mkdir --parent)."
+	print "                    BE CAREFULL: You can quickly end up with a whole"
+	print "                    lot of wird directories!"
+	print "       -o --operate [pfe] Give at least one or all of these letters."
+	print "               Not implemented yet!"
+			#TODO Make an implementation
+	print "                    p Operate on the path part. You might have to use"
+	print "                      the --parent switch."
+	print "                    f Operate on the file name. Only giving this is default"
+	print "                      on the long term, but current implementation uses pfe."
+	print "                    e Operate on the file extension."
+	print ""
+	print "String operations:"
 	print "       -l --lower-case Make the latest marked text lower case."
+	print "               Not implemented yet!"
 	print "       -u --upper-case Make the latest marked text upper case."
+	print "               Not implemented yet!"
 	print "       -s --search  Find the given text and mark it. Use e.g."
 	print "                    -r to actually replace it."
 	print "       -r --replace Replaces the latest marked text with the given"
