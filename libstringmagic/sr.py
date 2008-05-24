@@ -100,55 +100,56 @@ class Delete(StringModifier):
 		return string
 			
 		
-class Replace(StringModifier):
-	"""Replaces the strings found by a search with the one given as parameter."""
-	def __init__(self, replace):
+class Insert(StringModifier):
+	"""Inserts a given string at the locations marked by e.g. a search."""
+	def __init__(self, insert):
 		StringModifier.__init__(self)
-		self.replace = replace
+		self.insert = insert
 
 	def execute(self, string, previous = None):
 		"""Executes the command and returns the result based on the given argument."""
 		if previous == None:
 			previous = StringModifier()
 		prevIndex = 0
-		addindex = 0
+		addindex = 0 # How much the new string grows.
 		newstring = ""
 		for res in previous.results:
-			newstring = newstring + string[prevIndex:res.endindex]  + self.replace
+			# Insert the string at the proper location.
+			newstring = newstring + string[prevIndex:res.endindex]  + self.insert
+
+			# Save what we did and where we did it.
 			prevIndex = res.endindex
 			self.results.append(Result(res.startindex + addindex,
-			                       res.startindex + addindex + len(self.replace), self.replace))
-			addindex = addindex + len(self.replace)
+			                       res.startindex + addindex + len(self.insert), self.insert))
+			addindex = addindex + len(self.insert)
 		newstring = newstring + string[prevIndex:]
 		return newstring
 class Append(StringModifier):
-	"""Appends the given string to the end of the file name, not altering the extension."""
-	def __init__(self, append):
+	"""Marks where a string to the end of the file name, not altering the extension."""
+	def __init__(self):
 		StringModifier.__init__(self)
-		self.append = append
 		self.appendExtension = False # Append to the extension?
 
 	def execute(self, string, previous = None):
 		"""Executes the command and returns the result based on the given argument."""
                 rdot = string.find(".")
                 if rdot > -1 and self.appendExtension == False:
-			self.results.append(Result(rdot, rdot + len(self.append), self.append))
-                        return string[:rdot] + self.append + string[rdot:]
+			self.results.append(Result(rdot, rdot, ""))
+                        return string
                 else:
-			self.results.append(Result(len(string) - 1, len(string) - 1 + len(self.append), self.append))
-                        return string + self.append
+			self.results.append(Result(len(string), len(string), ""))
+                        return string
 	def setAppendExtension(self, appendExtension):
 		"""Sets if appending must always be done to the file extension (value True)
 		   or just to the file name (value False)."""
 		self.appendExtension = appendExtension
 
 class Prefix(StringModifier):
-	"""Inserts the string in the beginning of each string."""
-	def __init__(self, prefix):
+	"""Marks the string in the beginning of each string."""
+	def __init__(self):
 		StringModifier.__init__(self)
-		self.prefix = prefix
 		
 	def execute(self, string, previous = None):
 		"""Executes the command and returns the result based on the given argument."""
-		self.results.append(Result(0, len(self.prefix) - 1, self.prefix))
-		return self.prefix + string
+		self.results.append(Result(0, 0, ""))
+		return string

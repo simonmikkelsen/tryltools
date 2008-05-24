@@ -12,6 +12,7 @@ def main(argv):
 		print str(err)
 		sys.exit(2)
 
+#TODO the current verbose must be on by default, but can be silenced. Verbose is for more advanced stuff.
 	verbose = False
 	dryrun = False
 	makeParentDirs = False 
@@ -28,18 +29,18 @@ def main(argv):
 			cmdMgr.add(sr.Search(value))
 		elif switch in ("-r", "--replace"):
 			cmdMgr.add(sr.Delete())
-			# TODO The replacer should be an appender.
-			cmdMgr.add(sr.Replace(value))
+			cmdMgr.add(sr.Insert(value))
 		elif switch in ("-p", "--prefix"):
-			cmdMgr.add(sr.Prefix(value))
+			cmdMgr.add(sr.Prefix())
+			cmdMgr.add(sr.Insert(value))
 		elif switch in ("-a", "--append"):
-			# TODO This should be a search and an append - no need for special code.
-			cmdMgr.add(sr.Append(value))
+			cmdMgr.add(sr.Append())
+			cmdMgr.add(sr.Insert(value))
 		elif switch in ("-A", "--append-ext"):
-			# TODO this should be an "end of line" marker and an appender.
-			append = sr.Append(value)
+			append = sr.Append()
 			append.setAppendExtension(True)
 			cmdMgr.add(append)
+			cmdMgr.add(sr.Insert(value))
 		elif switch in ("l", "lower-case"):
 			# TODO make this
 			print "lower case not yet supported..."

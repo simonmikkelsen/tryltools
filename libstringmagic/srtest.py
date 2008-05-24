@@ -15,7 +15,7 @@ class ReplaceTest(unittest.TestCase):
 	def testReplace(self):
 		search = sr.StringModifier()
 		search.results = [sr.Result(4, 4, "needle"), sr.Result(7, 7, "needle")]
-		repl = sr.Replace(".")
+		repl = sr.Insert(".")
 		self.assertEqual(repl.execute("findthedots", search), "find.the.dots")
 
 class SRTest(unittest.TestCase):
@@ -23,14 +23,14 @@ class SRTest(unittest.TestCase):
 		cmdMgr = sr.CmdManager()
 		cmdMgr.add(sr.Search(" "))
 		cmdMgr.add(sr.Delete())
-		cmdMgr.add(sr.Replace("--"))
+		cmdMgr.add(sr.Insert("--"))
 		self.assertEqual(cmdMgr.execute("This is text too  "), "This--is--text--too----")
 	def testCombinedWithDoubleReplace(self):
 		cmdMgr = sr.CmdManager()
 		cmdMgr.add(sr.Search(" "))
 		cmdMgr.add(sr.Delete())
-		cmdMgr.add(sr.Replace("--"))
-		cmdMgr.add(sr.Replace(".."))
+		cmdMgr.add(sr.Insert("--"))
+		cmdMgr.add(sr.Insert(".."))
 		self.assertEqual(cmdMgr.execute("This is text too  "), "This--..is--..text--..too--..--..")
 
 	def testCombinedManually(self):
@@ -44,24 +44,27 @@ class SRTest(unittest.TestCase):
 		self.assertEqual(delete.results[2].startindex, 10)
 		self.assertEqual(deleteRes, "Thisistexttoo")
 
-		replace = sr.Replace(".")
+		replace = sr.Insert(".")
 		self.assertEqual(replace.execute(deleteRes, delete), "This.is.text.too")
 class AppendTest(unittest.TestCase):
 	def testAppend(self):
 		cmdMgr = sr.CmdManager()
-		cmdMgr.add(sr.Append("-more"))
+		cmdMgr.add(sr.Append())
+		cmdMgr.add(sr.Insert("-more"))
 		self.assertEqual(cmdMgr.execute("Text.txt"), "Text-more.txt")
 	def testAppendWithReplace(self):
 		cmdMgr = sr.CmdManager()
-		cmdMgr.add(sr.Append("-more"))
-		cmdMgr.add(sr.Replace("-stuff"))
+		cmdMgr.add(sr.Append())
+		cmdMgr.add(sr.Insert("-more"))
+		cmdMgr.add(sr.Insert("-stuff"))
 		self.assertEqual(cmdMgr.execute("Text.txt"), "Text-more-stuff.txt")
 
 	def testAppendExtension(self):
 		cmdMgr = sr.CmdManager()
-		appender = sr.Append("-more")
+		appender = sr.Append()
 		appender.setAppendExtension(True)
 		cmdMgr.add(appender)
+		cmdMgr.add(sr.Insert("-more"))
 		self.assertEqual(cmdMgr.execute("Text.txt"), "Text.txt-more")
 		
 if __name__ == "__main__":
