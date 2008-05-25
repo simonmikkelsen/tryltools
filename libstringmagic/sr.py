@@ -64,7 +64,57 @@ class StringModifier:
 		   this method but remember to call it."""
 		self.results = []
 		
+class MarkedPartsModifier(StringModifier):
+	"""Feeds implementing classes the parts of a string which has been marked, and
+	   takes care of reinserting those parts into the original string."""
+	def __init__(self):
+		StringModifier.__init__(self)
+
+	def modifyPart(self, part):
+		"""For each marked part in the current string this method is called.
+		   It must return the altered version of the string. The reset method
+		   is not called between invocations of this method."""
+		raise NotImplementedError()
+
+	def execute(self, string, previous = None):
+		"""Executes the command and returns the result based on the given argument."""
+		if previous == None:
+			previous = StringModifier()
+		prevIndex = 0
+		prevRes = None
+		addindex = 0 # How much the new string grows.
+		newstring = ""
+		for res in previous.results:
+			strBefore = string[:res.startindex]
+			strMarked = string[res.startindex : res.endindex]
+			strAfter  = string[res.endindex:]
+			latestUnmidified = ""
+			if prevRes == None:
+				latestUnmidified = string[:res.startindex]
+			else:
+				latestUnmidified = string[prevRes.endindex:res.startindex]
+			strModified = self.modifyPart(strMarked)
+			# Insert the string at the proper location.
+			newstring = newstring + latestUnmidified + strModified
+
+			# Save what we did and where we did it.
+			prevIndex = res.endindex
+			prevRes = Result(res.startindex + addindex,
+			          res.startindex + addindex + len(strModified), strModified) 
+			self.results.append(prevRes)
+			addindex = addindex + len(strModified)
+		newstring = newstring + string[prevIndex:]
+		return newstring
 	
+class Everything(StringModifier):
+	"""Marks the entire string."""
+	def __init__(self):
+		StringModifier.__init__(self)
+		
+	def execute(self, string, previous = None):
+		"""Executes the command and returns the result based on the given argument."""
+		self.results.append(Result(0, len(string), string))
+		return string
 class Search(StringModifier):
 	"""Searches for the string given as parameter."""
 	search = ""
@@ -153,3 +203,21 @@ class Prefix(StringModifier):
 		"""Executes the command and returns the result based on the given argument."""
 		self.results.append(Result(0, 0, ""))
 		return string
+class Lowercase(MarkedPartsModifier):
+	"""Makes the marked text lower case."""
+	def __init__(self):
+		MarkedPartsModifier.__init__(self)
+	def modifyPart(self, part):
+		"""For each marked part in the current string this method is called.
+		   It must return the altered version of the string. The reset method
+		   is not called between invocations of this method."""
+		return part.lower()
+class Uppercase(MarkedPartsModifier):
+	"""Makes the marked text lower case."""
+	def __init__(self):
+		MarkedPartsModifier.__init__(self)
+	def modifyPart(self, part):
+		"""For each marked part in the current string this method is called.
+		   It must return the altered version of the string. The reset method
+		   is not called between invocations of this method."""
+		return part.upper()

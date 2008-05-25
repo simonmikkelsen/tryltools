@@ -66,6 +66,30 @@ class AppendTest(unittest.TestCase):
 		cmdMgr.add(appender)
 		cmdMgr.add(sr.Insert("-more"))
 		self.assertEqual(cmdMgr.execute("Text.txt"), "Text.txt-more")
+class IndirectPartModifierTest(unittest.TestCase):
+	"""Tests classes that uses the part modifier."""
+	def testLower(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search("M"))
+		cmdMgr.add(sr.Lowercase())
+		self.assertEqual(cmdMgr.execute("I Love my Mom"), "I Love my mom")
+	def testLowerEverything(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Everything())
+		cmdMgr.add(sr.Lowercase())
+		self.assertEqual(cmdMgr.execute("I Love my Mom"), "i love my mom")
+
+	def testLowerMore(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search("MAN"))
+		cmdMgr.add(sr.Lowercase())
+		self.assertEqual(cmdMgr.execute("MAN, I Love my Mom"), "man, I Love my Mom")
+	def testUpperWithInsert(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search("man"))
+		cmdMgr.add(sr.Uppercase())
+		cmdMgr.add(sr.Insert(" dude"))
+		self.assertEqual(cmdMgr.execute("man, I Love my Mom"), "MAN dude, I Love my Mom")
 		
 if __name__ == "__main__":
 	unittest.main()

@@ -4,16 +4,16 @@ import sys, getopt, sr, shutil
 
 def main(argv):
 	try:
-		opts, files = getopt.getopt(argv[1:], "hvnlus:r:p:a:A:",
+		opts, files = getopt.getopt(argv[1:], "hvqnlus:r:p:a:A:",
 		             ["help", "verbose", "dry-run", "lower-case", "upper-case"
 		              "search=", "replace=", "prefix=", "append=", "append-ext=",
-		              "parents"])
+		              "parents", "quiet"])
 	except getopt.GetoptError, err:
 		print str(err)
 		sys.exit(2)
 
-#TODO the current verbose must be on by default, but can be silenced. Verbose is for more advanced stuff.
 	verbose = False
+	quiet = False
 	dryrun = False
 	makeParentDirs = False 
 	cmdMgr = sr.CmdManager()
@@ -23,6 +23,8 @@ def main(argv):
 			sys.exit(0)
 		elif switch in ("-v", "--verbose"):
 			verbose = True
+		elif switch in ("-q", "--quiet"):
+			quiet = True
 		elif switch in ("-n", "--dry-run"):
 			dryrun = True
 		elif switch in ("-s", "--search"):
@@ -41,13 +43,13 @@ def main(argv):
 			append.setAppendExtension(True)
 			cmdMgr.add(append)
 			cmdMgr.add(sr.Insert(value))
-		elif switch in ("l", "lower-case"):
-			# TODO make this
-			print "lower case not yet supported..."
-		elif switch in ("u", "upper-case"):
-			# TODO make this
-			print "upper case not yet supported..."
-		elif switch in ("parents"):
+		elif switch in ("-l", "--lower-case"):
+			cmdMgr.add(sr.Everything())
+			cmdMgr.add(sr.Lowercase())
+		elif switch in ("-u", "--upper-case"):
+			cmdMgr.add(sr.Everything())
+			cmdMgr.add(sr.Uppercase())
+		elif switch in ("--parents"):
 			makeParentDirs = True
 			# TODO make this
 			print "Creating non existing dirs not yet supported..."
@@ -57,7 +59,7 @@ def main(argv):
 	
 	for file in files:
 		destFile = cmdMgr.execute(file)
-		if verbose:
+		if not quiet:
 			print file + " => " + destFile
 		if not dryrun:
 			shutil.move(file, destFile)
@@ -88,9 +90,7 @@ def printHelp():
 	print ""
 	print "String operations:"
 	print "       -l --lower-case Make the latest marked text lower case."
-	print "               Not implemented yet!"
 	print "       -u --upper-case Make the latest marked text upper case."
-	print "               Not implemented yet!"
 	print "       -s --search  Find the given text and mark it. Use e.g."
 	print "                    -r to actually replace it."
 	print "       -r --replace Replaces the latest marked text with the given"
