@@ -91,5 +91,33 @@ class IndirectPartModifierTest(unittest.TestCase):
 		cmdMgr.add(sr.Insert(" dude"))
 		self.assertEqual(cmdMgr.execute("man, I Love my Mom"), "MAN dude, I Love my Mom")
 		
+class NumberingTest(unittest.TestCase):
+	def testAfter(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search("MAN "))
+		cmdMgr.add(sr.Numbering(1, 1, sr.Numbering.AFTER))
+		self.assertEqual(cmdMgr.execute("Counted MAN "), "Counted MAN 1")
+		self.assertEqual(cmdMgr.execute("Counted MAN "), "Counted MAN 2")
+		
+	def testBefore(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search(" MAN"))
+		cmdMgr.add(sr.Numbering(1, 1, sr.Numbering.BEFORE))
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted 1 MAN")
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted 2 MAN")
+	def testNegative(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search(" MAN"))
+		cmdMgr.add(sr.Numbering(1, -2, sr.Numbering.BEFORE))
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted 1 MAN")
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted -1 MAN")
+	def testMultiNegative(self):
+		cmdMgr = sr.CmdManager()
+		cmdMgr.add(sr.Search(" MAN"))
+		cmdMgr.add(sr.Numbering(3, -4, sr.Numbering.BEFORE))
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted 3 MAN")
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted -1 MAN")
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted -5 MAN")
+		self.assertEqual(cmdMgr.execute("Counted  MAN"), "Counted -9 MAN")
 if __name__ == "__main__":
 	unittest.main()

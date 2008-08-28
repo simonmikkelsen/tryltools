@@ -221,3 +221,28 @@ class Uppercase(MarkedPartsModifier):
 		   It must return the altered version of the string. The reset method
 		   is not called between invocations of this method."""
 		return part.upper()
+class Numbering(MarkedPartsModifier):
+	BEFORE = 1
+	AFTER = 2
+	"""Inserts numbers before or after marked parts."""
+	def __init__(self, start = 1, interval = 1, insert = None):
+		MarkedPartsModifier.__init__(self)
+		if insert == self.AFTER or insert == None:
+			self.format = '%(str)s%(num)d'
+		elif insert == self.BEFORE:
+			self.format = '%(num)d%(str)s'
+		else:
+			# TODO better error handling.
+			print "Error: Unknown insertion mode."
+		self.start = start
+		self.current = self.start
+		self.interval = interval
+		
+	def modifyPart(self, part):
+		"""For each marked part in the current string this method is called.
+		   It must return the altered version of the string. The reset method
+		   is not called between invocations of this method."""
+		res = self.format % {'str' : part, 'num' : self.current}
+		self.current = self.current + self.interval	
+		return res
+	
