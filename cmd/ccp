@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ $# = 0 -o "$1" = "-h" -o "$1" = "--help" ]
+then
+	echo "Usage: $0 file[s] dir
+	echo "Copies the given files to the dir given as the last"
+	echo "argument, then cd's to that dir."
+	echo "Except for the last argument, which must be a"
+	echo "final dir, the rest of the arguments can be of"
+	echo "your local cp command."
+	echo "License: GPLv3 by Simon Mikkelsen"
+	echo "http://mikkelsen.tv/simon/   /  http://code.google.com/p/tryltools/"
+	exit 0
+fi
+
+cp $*
+
+while [ $# -gt 1 ]; do
+	shift
+done
+cd $1
+

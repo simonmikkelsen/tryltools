@@ -1,0 +1,36 @@
+###############################
+# fullpath.sh
+# Given a relative path, create a full path.
+
+# check for one arg
+if [ $# -ne 1 ]; then
+	echo "Usage : $0 {relative path}"
+	exit -1
+fi
+
+# check to see if $1 exists
+if [ -e $1 ]; then
+	B=`basename $1`
+	P=`dirname $1`
+	#  echo BASE:$B  PATH:$P
+	cd $P
+	
+	if [ `pwd` != "/" ]
+	then
+		FULLNAME=`pwd`/$B
+	else
+		FULLNAME=/$B
+	fi
+	
+	echo $FULLNAME
+else
+	echo "$1 - Not a regular file"
+	exit -1
+fi
+##########################################
+
+
+#Larry Richardson
+#larryr2 at bellsouth.net
+#http://www.ale.org/pipermail/ale/20031130/003823.html
+

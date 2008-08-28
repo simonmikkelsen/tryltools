@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ $# = 0 -o "$1" = "-h" -o "$1" = "--help" ]
+then
+	echo "Usage: $0 iso-file"
+	echo "Lists all files in the given .iso image."
+	echo "You must be able to mount the file via sudo."
+	echo "Currently only accepts one file."
+	echo ""
+	echo "License: GPLv3 by Simon Mikkelsen"
+	echo "http://mikkelsen.tv/simon/   /  http://code.google.com/p/tryltools/"
+	exit 0
+fi
+
+isofile="$1"
+mntpoint="$HOME/tmp/iso/"
+sudo /bin/mount "$isofile" "$mntpoint" -oloop
+
+find "$mntpoint" -printf "%T@ %TY-%Tm-%Td %TT %s %p\\n"
+
+sudo /bin/umount "$mntpoint"
+
