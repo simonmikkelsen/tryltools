@@ -7,7 +7,7 @@ class TextFileParser(Parser):
         """Returns a list of file extensions (without leading dot) that
            can be parsed."""
        return ["txt", "nfo"]
-    def canParser(self, inputstream):
+    def canParse(self, inputstream):
         """Returns if the given uri can be parsed.
            TODO this might change so the parser must have
            a stream of some sort provided."""
