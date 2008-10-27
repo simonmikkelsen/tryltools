@@ -1,0 +1,26 @@
+Must handle
+	Permission denied
+	All indexers must be able to stop on command.
+Indexer
+	IndexerPlugin
+		-FileName
+		-MimeType
+		-FileExt
+		-FilePath
+		-getMoreKeywords
+		-resetKeywordPointer
+		-Title
+		-FileSize
+		-FileCreationDate
+		-FileModificationDate
+		-Author
+		-Copyright
+		-Genre
+		-Tags
+		-Description
+		-thumbnail
+		-wordcount
+		-pauseIndexing
+		-
+		-
+		-
