@@ -2,10 +2,10 @@ class InputStream:
     """General input stream which is independent of input source."""
     def close(self):
         """Signal that the stream is not to be used anymore."""
-        raise NotImplementedException()
+        raise NotImplementedError()
     def isOpen(self):
         """Returns if the stream is open."""
-        raise NotImplementedException()
+        raise NotImplementedError()
     def rewind(self):
         """Rewinds the stream, so it will return matrial from the start.
            This feature is so parsers can take a look at some material and
@@ -13,7 +13,7 @@ class InputStream:
            To save a parser should not expect to be able to use this method
            if more than 4 KB of data has been read, in which case a 
            `CannotRewindException` might be raised."""
-        raise NotImplementedException()
+        raise NotImplementedError()
     def read(self, count):
         """Read and return at most this number of bytes.
            When there is not more data, nothing is returned.
@@ -21,7 +21,7 @@ class InputStream:
                      Why not just read the next line? Have you ever seen
                      a 100 MB XML file with no newlines? I have.
            -`readline`: Return at most the next line."""
-        raise NotImplementedException()
+        raise NotImplementedError()
     def readline(self, count):
         """Read and return at most this number of bytes or one line
            whichever comes first.
@@ -30,7 +30,7 @@ class InputStream:
                      Why not just read the next line? Have you ever seen
                      a 100 MB XML file with no newlines? I have.
         """
-        raise NotImplementedException()
+        raise NotImplementedError()
 
 class CannotRewindException(StandardError):
     """Raised if somebody tries to rewind an input stream when the beginning
@@ -39,15 +39,15 @@ class CannotRewindException(StandardError):
 
 class FileInputStream(InputStream):
     """`InputStream` which reads from a file system."""
-    def __init__(self, urimetadata):
+    def __init__(self, filepath):
         """Creates a new instance.
-           -`urimetadata`: Object which provides information enough to
-                           derive the location of the input file."""
-        self.uri = urimetadata
+           -`filepath`: Path to the file."""
+        self.uri = filepath 
+        self.filepointer = None
  
     def open(self):
         """Opens the input stream using the uri given to the constructor.."""
-        self.filepointer = open(self.uri.getGlobalIdentifier())
+        self.filepointer = open(self.uri)
     def close(self):
         """Signal that the stream is not to be used anymore."""
         if self.filepointer != None:

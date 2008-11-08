@@ -3,25 +3,50 @@ import string
 import re
 
 from inputstream import *
+from urimetadata import *
+
+class ParserFactory:
+    """Creates instances of `Parser`s and determines if a parser can
+       parse some data. One `ParserFactory` can represent one or more
+       parsers.
+    """
+    def findParser(self, urimetadata):
+        """Returns a parser suiteable for the given uri or `None`
+           if this factory does not think it can find one.
+           It is up to the parser to use which data it finds most suitable
+           and all arguments can be `None`. In the latter case `None` should
+           also be returned, but hey - the parser might just be that magic
+           that can get something from nothing.
+           -`urimetadata`: Uri to get parser from or `None`.
+        """
+        raise NotImplementedError()
 
 class Parser:
-    """Interface for classes which can parse files."""
-    def getExtensions(self):
-        """Returns a list of file extensions (without leading dot) that
-           can be parsed."""
-        raise NotImplementedException()
-    def canParse(self, inputstream):
-        """Returns if the given uri can be parsed.
-           This method must not modify the rest of the object, as it
-           can be invoked any number of times without `reset` being
-           invoked.
-           -`inputstream`: `InputStream` to read from.
-        """
-        raise NotImplementedException()
+    def __iter__(self):
+        """Each call returns the next parsed word."""
+        raise NotImplementedError()
 
-class SimpleTextFileParser(Parser):
+class TextParserFactory(ParserFactory):
+    def findParser(self, urimetadata):
+        """Returns a parser suiteable for the given uri or stream or `None`
+           if this parser does not think it can find one.
+           It is up to the parser to use which data it finds most suitable
+           and all arguments can be `None`. In the latter case `None` should
+           also be returned, but hey - the parser might just be that magic
+           that can get something from nothing.
+           -`urimetadata`: Uri to get parser from or `None`.
+        """
+        if urimetadata == None:
+            return None
+        ext = urimetadata.getFileExtension()
+        mime = urimetadata.getMimeType()
+        if ext in [".txt", ".nfo"] or mime in ["text/plain"]:
+            return SimpleTextParser(urimetadata.getInputstream())
+        return None
+
+class SimpleTextParser(Parser):
     def __init__(self, inputstream):
-        """Simple class for parsing text files. It does not handle encoding and
+        """Simple class for parsing text. It does not handle encoding and
            may give bad results for some non english and non danish languages.
            But it's simple and a good start.
            -`inputstream`: `InputStream` to read from."""
@@ -34,19 +59,6 @@ class SimpleTextFileParser(Parser):
         wordChars = string.ascii_lowercase + 'æøåöäëñõãiüéáèàóòýíìúùũ'
         self.reNonWord = re.compile("[^"+re.escape(wordChars)+"]+")
         self.readBuffer = ""
-    def getExtensions(self):
-        """Returns a list of file extensions (without leading dot) that
-           can be parsed."""
-        return ["txt", "nfo"]
-    def canParse(self, inputstream):
-        """Returns if the given uri can be parsed.
-           This method must not modify the rest of the object, as it
-           can be invoked any number of times without `reset` being
-           invoked.
-           -`inputstream`: `InputStream` to read from.
-        """
-        # If the extension isn't text, ignore it.
-        return False
     def __iter__(self):
         """The class iterator which returns keywords."""
         readInput = lambda: self.inputstream.readline(self.readBufferSize)
