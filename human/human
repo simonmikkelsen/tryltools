@@ -1,0 +1,56 @@
+#!/usr/bin/python
+
+import sys, getopt, re, math
+
+
+def main(argv):
+    try:
+        opts, files = getopt.getopt(argv[1:], "hb:", ["help", "base"])
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    factor = 1
+    for switch, value in opts:
+        if switch in ("-h", "--help"):
+            print """Usage: human [-b number], reads from stdin
+    -b --base number to multiply the found numbers with, e.g. 1024 if the numbers are in KB.
+    -h --help print this text and exit.
+
+    Released under GPLv3, Copyright by Simon Mikkelsen http://mikkelsen.tv/simon/
+"""
+            sys.exit() 
+        elif switch in ("-b", "--base"):
+            factor = value
+        else:
+            print "Unknown switch: " + switch
+            sys.exit(2)
+        
+    # Regular expression that will split by numbers.
+    splitByNumbers = re.compile("([0-9]+)")
+    # First line will always be non number.
+    isNumber = False
+
+    # Run for each part.
+    for line in sys.stdin:
+        parts = splitByNumbers.split(line)
+        for p in parts:
+            if not isNumber:
+                print p,
+            else:
+                p = int(p) * int(factor)
+                print toHuman(p),
+            # The next is of the other kind.
+            isNumber = not isNumber
+
+def toHuman(number):
+    base = 1024
+    postfixes = ["", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"]
+    pow = 0
+    for p in postfixes: 
+        pow = pow + 1
+        if number < math.pow(base, pow):
+            return str(math.floor(number*10 / math.pow(base, pow - 1)) / 10 ) + p
+    return number
+if __name__ == "__main__":
+    main(sys.argv)
