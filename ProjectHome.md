@@ -1,0 +1,1 @@
+General purpose tools for the unix command line. The tools are in general made to fit the authors single purpose, but made general enough to be used in unimaginable situations. Some tools are made into components, so whole or part of their functionallity can be integrated into other tools.
